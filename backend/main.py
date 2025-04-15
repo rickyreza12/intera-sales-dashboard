@@ -1,6 +1,6 @@
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
-from fastapi import FastAPI, HTTPException, Query, Request, status, Depends
+from fastapi import FastAPI, HTTPException, Query, Request, status, Security, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 from passlib.context import CryptContext
@@ -12,8 +12,14 @@ SECRET_KEY = "8897ABC"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/token", auto_error=False)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+#Handling
+async def custom_oauth2_scheme(token: str = Depends(oauth2_scheme)):
+    if not token:
+        error_response(401, "Missing or invalid token")
+    return token
 
 # Example user
 fake_user = {
@@ -22,6 +28,7 @@ fake_user = {
     "hashed_password": pwd_context.hash("password123"),
 }
 
+#Access Handling
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
@@ -41,14 +48,23 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 def error_response(status_code: int, message: str):
     raise HTTPException(
         status_code=status_code,
-        detail={
+        detail=
+        {
             "statusCode": status_code,
             "message": message,
             "data": None 
         }
     )
 
+#Route handling
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 # Load dummy data
 with open("dummyData.json", "r") as f:
@@ -64,7 +80,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
 @app.post("/api/sales-reps")
 async def get_sales_reps(
-    token: str = Depends(oauth2_scheme),
+    token: str = Depends(custom_oauth2_scheme),
     region: str = Query(default=None),
     name: str = Query(default=None),
     role: str = Query(default=None),
