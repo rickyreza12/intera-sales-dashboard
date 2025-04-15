@@ -6,3 +6,10 @@ __pycache__/
 .env
 *.sqlite3
 venv/
+
+# frontend/.gitignore
+.next/
+node_modules/
+.env.local
+out/
+.DS_Store
