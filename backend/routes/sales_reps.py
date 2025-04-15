@@ -2,7 +2,8 @@
 import json
 from fastapi import APIRouter, Depends, Query
 
-from auth.auth_handler import custom_oauth2_scheme, decode_token, fake_user
+from auth.auth_handler import custom_oauth2_scheme, decode_token
+from utils.users import get_fake_user
 from models.dummy_data import load_dummy_data
 from utils.response import error_response
 
@@ -25,7 +26,8 @@ async def get_sales_reps(
     size: int = Query(default=10)
 ):
     username = decode_token(token)
-    if username != fake_user["username"]:
+    user = get_fake_user()
+    if username != user["username"]:
             raise error_response(401, "Invalid Token")
     
     reps = load_dummy_data()["salesReps"]

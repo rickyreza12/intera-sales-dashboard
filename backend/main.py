@@ -5,8 +5,7 @@ from auth.auth_handler import(
     authenticate_user,
     create_access_token,
     custom_oauth2_scheme,
-    decode_token,
-    fake_user
+    decode_token
 )
 
 import uvicorn

@@ -2,11 +2,12 @@ from datetime import datetime, timedelta
 import re
 from fastapi.testclient import TestClient
 from jose import jwt
+from config.settings import settings
 from main import app
 
 
-SECRET_KEY = "8897ABC"
-ALGORITHM = "HS256"
+SECRET_KEY = settings.SECRET_KEY
+ALGORITHM = settings.ALGORITHM
 
 client = TestClient(app)
 
