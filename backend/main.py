@@ -1,6 +1,6 @@
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
-from fastapi import FastAPI, HTTPException, Request, status, Depends
+from fastapi import FastAPI, HTTPException, Query, Request, status, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 from passlib.context import CryptContext
@@ -38,6 +38,16 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
+def error_response(status_code: int, message: str):
+    raise HTTPException(
+        status_code=status_code,
+        detail={
+            "statusCode": status_code,
+            "message": message,
+            "data": None 
+        }
+    )
+
 app = FastAPI()
 
 # Load dummy data
@@ -48,29 +58,88 @@ with open("dummyData.json", "r") as f:
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(form_data.username, form_data.password)
     if not user: 
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        raise error_response(401, "Invalid Credentials")
     access_token = create_access_token(data={"sub": user["username"]})
     return {"access_token": access_token, "token_type": "bearer"}
 
 @app.post("/api/sales-reps")
-async def get_sales_reps(token: str = Depends(oauth2_scheme)):
+async def get_sales_reps(
+    token: str = Depends(oauth2_scheme),
+    region: str = Query(default=None),
+    name: str = Query(default=None),
+    role: str = Query(default=None),
+    skill: str = Query(default=None),
+    client: str = Query(default=None),
+    deal_status: str = Query(default=None),
+    min_deal_value: int = Query(default=None),
+    sort_by : str = Query(default=None),
+    sort_order: str = Query(default="asc"),
+    page: int = Query(default=1),
+    size: int = Query(default=10)
+):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
         if username != fake_user["username"]:
-            raise HTTPException(status_code=401, detail="Invalid Token")
+            raise error_response(401, "Invalid Token")
+
     except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid Token")
+        raise error_response(401, "Invalid Token")
+
     
+    reps = DUMMY_DATA["salesReps"]
+    
+    def match(text, keyword):
+        return keyword.lower() in text.lower()
+
+    filtered = []
+    
+    #Filtering logic
+    
+    for rep in reps:
+        if name and not match(rep["name"], name):
+            continue
+        if region and rep["region"].lower() != region.lower():
+            continue
+        if role and not match(rep["role"], role):
+            continue
+        if skill and skill.lower() not in [skl.lower() for skl in rep["skills"]]:
+            continue
+        if client:
+            if not any(match(cln["name"], client) or match(cln["industry"], client) or match(cln["contact"], client) for cln in rep["clients"]):
+                continue
+        if deal_status:
+            if not any(deal["status"].lower() == deal_status.lower() for deal in rep["deals"]):
+                continue
+        if min_deal_value:
+            if not any(deal["value"] >= min_deal_value for deal in rep["deals"]):
+                continue
+        rep["deal_total"] = len(rep["deals"])
+        rep["client_total"] = len(rep["clients"])
+        filtered.append(rep)
+  
+    if sort_by:
+        reverse = sort_order == "desc"
+        try: 
+            filtered.sort(key=lambda x: x.get(sort_by, 0), reverse=reverse)
+        except:
+            pass  
+    
+    total = len(filtered)
+    start = (page - 1) * size
+    end = start + size
+    paginated = filtered[start:end]       
+    
+    #Response 
     return {
         "statusCode": 200,
         "message": "Sales reps data retrieved successfully.",
         "pagination": {
-            "total": len(DUMMY_DATA["salesReps"]),
-            "page": 1,
-            "size": len(DUMMY_DATA["salesReps"])
+            "total": total,
+            "page": page,
+            "size": size
         },
-        "data": DUMMY_DATA["salesReps"]
+        "data": paginated
     }
 
 # @app.get("/api/data")
