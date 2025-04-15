@@ -13,18 +13,43 @@ router = APIRouter()
 @router.post("/api/sales-reps")
 async def get_sales_reps(
     token: str = Depends(custom_oauth2_scheme),
-    region: str = Query(default=None),
-    name: str = Query(default=None),
-    role: str = Query(default=None),
-    skill: str = Query(default=None),
-    client: str = Query(default=None),
-    deal_status: str = Query(default=None),
-    min_deal_value: int = Query(default=None),
-    sort_by : str = Query(default=None),
-    sort_order: str = Query(default="asc"),
-    page: int = Query(default=1),
-    size: int = Query(default=10)
+    region: str = Query(default=None, description="Filter by region (e.g. 'Europe')"),
+    name: str = Query(default=None, description="Filter by partial/full name"),
+    role: str = Query(default=None, description="Filter by job role/title"),
+    skill: str = Query(default=None, description="Filter by one of the skills (e.g. 'Negotiation')"),
+    client: str = Query(default=None, description="Search client name, industry or contact"),
+    deal_status: str = Query(default=None, description="Filter deals by status (e.g. 'Closed Won')"),
+    min_deal_value: int = Query(default=None, description="Minimum value of any deal"),
+    sort_by : str = Query(default=None, description="Field to sort by (e.g. 'deal_total')"),
+    sort_order: str = Query(default="asc", description="Sorting order: 'asc' or 'desc'"),
+    page: int = Query(default=1, description="Page number for pagination"),
+    size: int = Query(default=10, description="Number of items per page")
 ):
+    """
+    Return responses as a filtered, sorted and pagination list of sales.
+    
+    **Requires JWT Bearer token in Authorization header**
+    
+    **Supports:**
+    - Region, Name, Role, Skill, Client info, Deal status filters
+    - Deal value threshold
+    - Sorting by any top level numeric field (e.g deal_total)
+    - pagination controls
+    
+    **Authorization:**
+    - Validates token and user before responding
+    
+    **Response Format:**
+    ```json
+    {
+        "statusCode": 200,
+        "message":"Success message",
+        "pagination":{total, page, size},
+        "data":[...]
+    }
+    ```
+    
+    """
     username = decode_token(token)
     user = get_fake_user()
     if username != user["username"]:
