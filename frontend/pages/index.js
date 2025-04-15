@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const TOKEN = process.env.NEXT_PUBLIC_JWT_TOKEN;
+
 export default function Home() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -7,7 +10,12 @@ export default function Home() {
   const [answer, setAnswer] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/data")
+    fetch(`${BASE_URL}/sales-reps`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${TOKEN}`
+      }
+    })
       .then((res) => res.json())
       .then((data) => {
         setUsers(data.users || []);
@@ -19,19 +27,19 @@ export default function Home() {
       });
   }, []);
 
-  const handleAskQuestion = async () => {
-    try {
-      const response = await fetch("http://localhost:8000/api/ai", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question }),
-      });
-      const data = await response.json();
-      setAnswer(data.answer);
-    } catch (error) {
-      console.error("Error in AI request:", error);
-    }
-  };
+  // const handleAskQuestion = async () => {
+  //   try {
+  //     const response = await fetch(`${BASE_URL}/ai`, {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ question }),
+  //     });
+  //     const data = await response.json();
+  //     setAnswer(data.answer);
+  //   } catch (error) {
+  //     console.error("Error in AI request:", error);
+  //   }
+  // };
 
   return (
     <div style={{ padding: "2rem" }}>
@@ -52,7 +60,7 @@ export default function Home() {
         )}
       </section>
 
-      <section>
+      {/* <section>
         <h2>Ask a Question (AI Endpoint)</h2>
         <div>
           <input
@@ -68,7 +76,7 @@ export default function Home() {
             <strong>AI Response:</strong> {answer}
           </div>
         )}
-      </section>
+      </section> */}
     </div>
   );
 }
