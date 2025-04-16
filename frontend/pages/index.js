@@ -16,6 +16,7 @@ export default function Home() {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const [selectedRep, setSelectedRep] = useState(null)
+  const [showAIChat, setShowAIChat] = useState(false)
 
   const [data, setData] = useState([]);
   const [token, setToken] = useState("");
@@ -213,6 +214,13 @@ export default function Home() {
     }
   }
 
+  function handleClickOutside(e) {
+    const panel = document.getElementById('ai-panel');
+    if (panel && !panel.contains(e.target)) {
+      setShowAIChat(false);
+    }
+  }
+
   useEffect(() => {
 
     const init = async () => {
@@ -220,9 +228,17 @@ export default function Home() {
       setData(mockSalesRepsResponse.data)
       // await fetchData();
     }
+
+    if(showAIChat){
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
     
     init();
-  }, []);
+  }, [showAIChat]);
 
 
   return (
@@ -240,7 +256,10 @@ export default function Home() {
       {/* SideBar */}
       <div className="fixed top-0 left-0 h-screen w-16 bg-white text-white flex flex-col items-center justify-center gap-4 shadow-sm z-5">
           <div className="group relative">
-            <button className="hover:bg-[#0F1B2B]/10 p-2 rounded-md transition duration-200 ease-in-out">
+            <button className="hover:bg-[#0F1B2B]/10 p-2 rounded-md transition duration-200 ease-in-out" onClick={()=>{
+              setShowAIChat(false)
+            }}
+            >
               <DashboardIcon className="w-6 h-6 text-white" />
             </button>
             <div className="tooltip-bubble absolute left-14 top-1/2 -translate-y-1/2 bg-white text-[#0F1B2B] text-sm px-4 py-2 rounded-md opacity-0 group-hover:opacity-100 transition whitespace-nowrap shadow">
@@ -248,7 +267,7 @@ export default function Home() {
             </div>
           </div>
           <div className="group relative">
-            <button className="hover:bg-[#0F1B2B]/10 p-2 rounded-md transition duration-200 ease-in-out">
+            <button onClick={()=> setShowAIChat(prev => !prev)} className="hover:bg-[#0F1B2B]/10 p-2 rounded-md transition duration-200 ease-in-out">
               <AIIcon className="w-6 h-6 text-white" />
             </button>
             <div className="tooltip-bubble absolute left-14 top-1/2 -translate-y-1/2 bg-white text-[#0F1B2B] text-sm px-4 py-2 rounded-md opacity-0 group-hover:opacity-100 transition whitespace-nowrap shadow">
@@ -457,6 +476,40 @@ export default function Home() {
               </div>
 
             </div>
+          
+            {/* AI Chat Sidebar  */}
+            <div 
+            id="ai-panel"
+            className={`fixed top-0 right-0 h-full bg-white shadow-lg z-50 transition-al duration-300 ease-in-out ${showAIChat ? 'w-full sm:w-[400px]' : 'w-0 overflow-hidden'}`}>
+              <div className="h-full flex flex-col p-4">
+                <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-lg font-semibold"> Ask About Sales</h2>
+                    <button onClick={()=> setShowAIChat(false)} className="text-lg font-bold"></button>
+                </div>
+
+                <div className="flex-1 overflow-y-auto text-center text-gray-400 text-sm pt-10">
+                  Ask About Sales
+                </div>
+
+                <div className="mt-auto pt-4 border-t">
+                    <div className="flex items-center gap-2">
+                      <input 
+                        type="text"
+                        placeholder="Type a questions..."
+                        className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm"
+                      />
+                      <button className="text-white bg-indigo-500 hover:bg-indigo-600 p-2 rounded-full">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M2.94 2.94a1.5 1.5 0 012.122 0l12 12a1.5 1.5 0 01-2.122 2.122l-12-12a1.5 1.5 0 010-2.122z" />
+                        </svg>
+                      </button>
+                    </div>
+                </div>
+
+              </div>
+
+            </div>
+
           </div>
       </main>
       
