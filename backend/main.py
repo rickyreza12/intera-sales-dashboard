@@ -11,7 +11,7 @@ from auth.auth_handler import(
 import uvicorn
 import json
 
-from routes import ai, auth, sales_reps, sales_sumary
+from routes import ai, auth, sales_reps, sales_sumary, sales_deal
 
 
 #Route handling
@@ -28,6 +28,7 @@ app.include_router(sales_reps.router)
 app.include_router(auth.router)
 app.include_router(ai.router)
 app.include_router(sales_sumary.router)
+app.include_router(sales_deal.router)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
