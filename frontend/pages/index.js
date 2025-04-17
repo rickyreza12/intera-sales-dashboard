@@ -23,55 +23,18 @@ export default function Home() {
   const [showAIChat, setShowAIChat] = useState(false)
   const [isDarkMode, setIsDarkMode] = useState(false)
 
-  const [data, setData] = useState([]);
+  // const [data, setData] = useState([]);
   const [token, setToken] = useState("");
 
+  const [summary, setSummary] = useState(null);
+  const [dealStatusData, setDealStatusData] = useState([]);
+  const [clientsData, setClientsData] = useState([]);
+  const [topReps, setTopReps] = useState([]);
+  const [salesReps, setSalesReps] = useState([]);
   
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
 
-  const regionRevenue = [
-    { region: "North America", value: 120000 },
-    { region: "Europe", value: 90000 },
-    { region: "Asia-Pacific", value: 60000 },
-    { region: "South America", value: 80000 },
-    { region: "Middle East", value: 95000 },
-  ]
-
-  const topReps = [
-    {
-      name: "Alice",
-      revenue: 120000,
-      image: "https://api.dicebear.com/7.x/thumbs/svg?seed=Alice",
-      borderColor: "border-purple-500"
-    },
-    {
-      name: "Eve",
-      revenue: 95000,
-      image: "https://api.dicebear.com/7.x/thumbs/svg?seed=Eve",
-      borderColor: "border-indigo-500"
-    },
-    {
-      name: "Bob",
-      revenue: 90000,
-      image: "https://api.dicebear.com/7.x/thumbs/svg?seed=Bob",
-      borderColor: "border-blue-400"
-    },
-  ];
-
-  const dealStatusData = [
-    { name: "Closed Won", value: 3 },
-    { name: "In Progress", value: 3 },
-    { name: "Closed Lost", value: 3 },
-  ];
-
-  const clients = [
-    { name: "Acme Corp", industry: "Manufacturing" },
-    { name: "Kappa LLC", industry: "Retail" },
-    { name: "Gamma Enterp", industry: "Tech" },
-    { name: "Delta LLC", industry: "Finance" },
-    { name: "Epsilon Ltd", industry: "Health Care" },
-  ];
 
   const regionMapColors = {
     "North America": "#7C3AED",   // violet
@@ -123,108 +86,12 @@ export default function Home() {
   };
   
 
-  const mockSalesRepsResponse = {
-    statusCode: 200,
-    message: "Sales reps data retrieved successfully.",
-    pagination: {
-      total: 5,
-      page: 1,
-      size: 10
-    },
-    data: [
-      {
-        id: 1,
-        name: "Alice",
-        role: "Senior Sales Executive",
-        region: "North America",
-        skills: ["Negotiation", "CRM", "Client Relations"],
-        deals: [
-          { client: "Acme Corp", value: 120000, status: "Closed Won" },
-          { client: "Beta Ltd", value: 50000, status: "In Progress" },
-          { client: "Omega Inc", value: 85000, status: "Closed Lost" }
-        ],
-        clients: [
-          { name: "Acme Corp", industry: "Manufacturing", contact: "alice@acmecorp.com" },
-          { name: "Beta Ltd", industry: "Retail", contact: "contact@betaltd.com" }
-        ],
-        deal_total: 3,
-        client_total: 2
-      },
-      {
-        id: 2,
-        name: "Bob",
-        role: "Sales Representative",
-        region: "Europe",
-        skills: ["Lead Generation", "Presentation", "Negotiation"],
-        deals: [
-          { client: "Gamma Inc", value: 75000, status: "Closed Lost" },
-          { client: "Delta LLC", value: 90000, status: "Closed Won" },
-          { client: "Sigma Corp", value: 65000, status: "In Progress" }
-        ],
-        clients: [
-          { name: "Gamma Inc", industry: "Tech", contact: "info@gammainc.com" },
-          { name: "Delta LLC", industry: "Finance", contact: "support@deltallc.com" }
-        ],
-        deal_total: 3,
-        client_total: 2
-      },
-      {
-        id: 3,
-        name: "Charlie",
-        role: "Account Manager",
-        region: "Asia-Pacific",
-        skills: ["Customer Service", "Sales Strategy", "Data Analysis"],
-        deals: [
-          { client: "Epsilon Ltd", value: 110000, status: "In Progress" },
-          { client: "Zeta Corp", value: 60000, status: "Closed Won" },
-          { client: "Theta Enterprises", value: 70000, status: "Closed Lost" }
-        ],
-        clients: [
-          { name: "Epsilon Ltd", industry: "Healthcare", contact: "contact@epsilonltd.com" },
-          { name: "Zeta Corp", industry: "Finance", contact: "sales@zetacorp.com" }
-        ],
-        deal_total: 3,
-        client_total: 2
-      },
-      {
-        id: 4,
-        name: "Dana",
-        role: "Business Development Manager",
-        region: "South America",
-        skills: ["Strategic Partnerships", "Negotiation", "Market Analysis"],
-        deals: [
-          { client: "Eta Co", value: 130000, status: "In Progress" },
-          { client: "Theta Inc", value: 80000, status: "Closed Won" },
-          { client: "Iota Group", value: 55000, status: "Closed Lost" }
-        ],
-        clients: [
-          { name: "Eta Co", industry: "Energy", contact: "info@etaco.com" },
-          { name: "Theta Inc", industry: "Telecommunications", contact: "sales@thetainc.com" }
-        ],
-        deal_total: 3,
-        client_total: 2
-      },
-      {
-        id: 5,
-        name: "Eve",
-        role: "Regional Sales Manager",
-        region: "Middle East",
-        skills: ["Relationship Building", "Negotiation", "Market Expansion"],
-        deals: [
-          { client: "Iota Ltd", value: 95000, status: "Closed Won" },
-          { client: "Kappa LLC", value: 45000, status: "In Progress" },
-          { client: "Lambda Partners", value: 105000, status: "Closed Lost" }
-        ],
-        clients: [
-          { name: "Iota Ltd", industry: "Hospitality", contact: "contact@iotaltd.com" },
-          { name: "Kappa LLC", industry: "Retail", contact: "info@kappallc.com" }
-        ],
-        deal_total: 3,
-        client_total: 2
-      }
-    ]
-  };
-  
+  function handleClickOutside(e) {
+    const panel = document.getElementById('ai-panel');
+    if (panel && !panel.contains(e.target)) {
+      setShowAIChat(false);
+    }
+  }
 
   const fetchToken = async () => {
     try{
@@ -247,45 +114,120 @@ export default function Home() {
 
       localStorage.setItem("token", token)
       setToken(token);
-      fetchData(token)
-
+      // fetchData(token)
+      return token;
     }catch (error){
       console.error("Something error while getting the token:", error)
       setLoading(false)
     }
   }
 
-  const fetchData = async () =>{
+  const fetchSummary = async (newToken) => {
     try {
-      const res = fetch(`${BASE_URL}/sales-reps`, {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${BASE_URL}/api/sales/summary`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${newToken}`
+        }
+      });
+      const json = await res.json();
+      setSummary(json.data)
+    }catch (err) {
+      console.error("Failed to fetch summary:", err);
+    }
+  }
+
+  const fetchDealStatus = async (newToken) => {
+    try {
+      const res = await fetch(`${BASE_URL}/api/sales/deal-status`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${newToken}`
+        }
+      })
+
+      const json = await res.json();
+      setDealStatusData(json.data.summary)
+
+    } catch (error) {
+      console.error("Failed to fetch deal status", error)
+    }
+  }
+
+  const fetchClients = async (newToken) => {
+    try {
+      const res = await fetch(`${BASE_URL}/api/sales/clients`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${newToken}`
+        }
+      });
+      const json = await res.json();
+  
+      if (!json?.data) {
+        console.warn("Clients data not found", json);
+        return;
+      }
+  
+      setClientsData(json.data);
+    } catch (err) {
+      console.error("Failed to fetch clients:", err);
+    }
+  };
+
+  const fetchTopReps  = async (newToken) => {
+    try {
+      const res = await fetch(`${BASE_URL}/api/sales/top-reps`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${newToken}`
+        }
+      });
+      const json = await res.json();
+  
+      if (!json?.data) {
+        console.warn("Clients data not found", json);
+        return;
+      }
+  
+      setTopReps(json.data);
+    } catch (err) {
+      console.error("Failed to fetch clients:", err);
+    }
+  };
+
+  const fetchSalesReps = async (token) => {
+    try {
+      const res = await fetch(`${BASE_URL}/api/sales/sales-reps`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
       const json = await res.json();
-      setData(json.data || [])
-
-      setLoading(false)
-    } catch (error) {
-      console.error("Failed to fetch data:", error);
-      setLoading(false);
+      if (!Array.isArray(json?.data)) {
+        console.warn("Sales reps data invalid", json);
+        return;
+      }
+  
+      setSalesReps(json.data);
+    } catch (err) {
+      console.error("Failed to fetch sales reps:", err);
     }
-  }
-
-  function handleClickOutside(e) {
-    const panel = document.getElementById('ai-panel');
-    if (panel && !panel.contains(e.target)) {
-      setShowAIChat(false);
-    }
-  }
+  };
 
   const init = async () => {
-    // await fetchToken();
-    setData(mockSalesRepsResponse.data)
-    setLoading(false)
-    // await fetchData();
-    
+    const freshToken = await fetchToken();
+    if(!freshToken) return;
+
+    await fetchSummary(freshToken);
+    await fetchDealStatus(freshToken);
+    await fetchClients(freshToken);
+    await fetchTopReps(freshToken)
+    await fetchSalesReps(freshToken)
+
+    setLoading(false)    
   }
 
   useEffect(() => {
@@ -365,11 +307,13 @@ export default function Home() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div className="card bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-slate-900 p-4">
                   <h3 className="text-sm text-gray-500 dark:text-slate-300">Total Revenue</h3>
-                  <p className="text-2xl font-bold dark:text-slate-200">$445,000</p>
+                  <p className="text-2xl font-bold dark:text-slate-200">${summary?.total_revenue?.toLocaleString() || "0"}</p>
                 </div>
                 <div className="card bg-white dark:bg-gray-800 rounded-lg shadow p-4 dark:shadow-slate-900">
                   <h3 className="text-sm text-gray-500 dark:text-slate-300">Pipeline (In Progress)</h3>
-                  <p className="text-2xl font-bold dark:text-slate-200">$400,000</p>
+                  <p className="text-2xl font-bold dark:text-slate-200">
+                    ${summary?.in_progress_revenue?.toLocaleString() || "0"}
+                  </p>
                 </div>
               </div>
 
@@ -389,7 +333,7 @@ export default function Home() {
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart
                         layout="vertical"
-                        data={regionRevenue}
+                        data={summary?.revenue_by_region}
                         barCategoryGap={12}
                         margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
                       >
@@ -406,7 +350,8 @@ export default function Home() {
                         />
                         <Tooltip formatter={(value, name) => [`$${value.toLocaleString()}`, "Revenue"]} />
                         <Bar dataKey="value" radius={[0, 6, 6, 0]} isAnimationActive={false}>
-                          {regionRevenue.map((entry, index) => (
+                          {
+                          summary.revenue_by_region.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={regionMapColors[entry.region]} />
                           ))}
                         </Bar>
@@ -432,7 +377,7 @@ export default function Home() {
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
-                          data={dealStatusData}
+                          data={dealStatusData.map(entry => ({name: entry.status, value: entry.count}))}
                           dataKey="value"
                           nameKey="name"
                           cx="50%"
@@ -461,7 +406,7 @@ export default function Home() {
                           className="w-3 h-3 rounded-full"
                           style={{ backgroundColor: ["#4f46e5", "#4338ca", "#06b6d4"][index] }}
                         />
-                        <span>{entry.name}</span>
+                        <span>{entry.status}</span>
                       </div>
                     ))}
                   </div>
@@ -480,7 +425,7 @@ export default function Home() {
                             <th className="pb-2">Industry</th>
                         </tr>
                       </thead>
-                      {clients.map((client, index) => (
+                      {clientsData.map((client, index) => (
                         <tr key={index} className="border-t">
                           <td className="py-2">{client.name}</td>
                           <td>
@@ -537,7 +482,7 @@ export default function Home() {
                       </thead>
                       <tbody className="whitespace-nowrap">
                         {
-                          data.map((rep, idx) => (
+                          salesReps.map((rep, idx) => (
                             <tr key={idx} className="border-b hover:bg-gray-100 dark:hover:bg-gray-500 cursor-pointer">
                               <td className="py-2 font-semibold">{rep.name}</td>
                               <td>
