@@ -20,7 +20,7 @@ def verify_password(plain_password, hashed_password):
 
 def authenticate_user(username: str, password: str):
     
-    print("EXPECTED:", settings.USERNAME, settings.PASSWORD)
+    print("EXPECTED:", settings.APP_USERNAME, settings.APP_PASSWORD)
     print("GOT:", username, password)
     user = get_fake_user()
     

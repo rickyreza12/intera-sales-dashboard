@@ -6,7 +6,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def get_fake_user():
     return {
-    "username": settings.USERNAME,
+    "username": settings.APP_USERNAME,
     "full_name": "Ricky Reza",
-    "hashed_password": pwd_context.hash(settings.PASSWORD),
+    "hashed_password": pwd_context.hash(settings.APP_PASSWORD),
 }
