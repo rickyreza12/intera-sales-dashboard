@@ -1,11 +1,15 @@
 import { URLSearchParams } from "next/dist/compiled/@edge-runtime/primitives/url";
 import { useState, useEffect } from "react";
-import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import DashboardIcon from "@/components/icons/DashboardIcon";
 import DarkModeIcon from "@/components/icons/DarkModeIcon";
 import AIIcon from "@/components/icons/AIICon";
 import EyeIcon from "@/components/icons/EyeIcon";
+import dynamic from "next/dynamic"
+
+const MapChart = dynamic(()=> import("@/components/MapChart"), {
+  ssr: false
+})
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 const TOKEN = process.env.NEXT_PUBLIC_JWT_TOKEN;
@@ -63,6 +67,56 @@ export default function Home() {
     { name: "Delta LLC", industry: "Finance" },
     { name: "Epsilon Ltd", industry: "Health Care" },
   ];
+
+  const regionMapColors = {
+    "North America": "#7C3AED",   // violet
+    "Europe": "#2563EB",          // blue
+    "Asia-Pacific": "#10B981",    // green
+    "South America": "#06B6D4",   // cyan
+    "Middle East": "#F59E0B",     // amber
+  };
+
+  const countryRegionMap = {
+      // North America
+    USA: "North America",
+    CAN: "North America",
+    MEX: "North America",
+
+    // Europe
+    FRA: "Europe",
+    DEU: "Europe",
+    ESP: "Europe",
+    GBR: "Europe",
+    ITA: "Europe",
+    NOR: "Europe",
+    SWE: "Europe",
+    POL: "Europe",
+    UKR: "Europe",
+    RUS: "Europe",
+
+    // Asia-Pacific
+    CHN: "Asia-Pacific",
+    JPN: "Asia-Pacific",
+    AUS: "Asia-Pacific",
+    IDN: "Asia-Pacific",
+    IND: "Asia-Pacific",
+    KOR: "Asia-Pacific",
+
+    // South America
+    BRA: "South America",
+    ARG: "South America",
+    COL: "South America",
+    CHL: "South America",
+    PER: "South America",
+
+    // Middle East
+    SAU: "Middle East",
+    ARE: "Middle East",
+    IRN: "Middle East",
+    ISR: "Middle East",
+    TUR: "Middle East",
+  };
+  
 
   const mockSalesRepsResponse = {
     statusCode: 200,
@@ -221,23 +275,26 @@ export default function Home() {
     }
   }
 
-  useEffect(() => {
+  const init = async () => {
+    // await fetchToken();
+    setData(mockSalesRepsResponse.data)
+    setLoading(false)
+    // await fetchData();
+    
+  }
 
-    const init = async () => {
-      await fetchToken();
-      setData(mockSalesRepsResponse.data)
-      // await fetchData();
-    }
+  useEffect(() => {
+    init();
 
     if(showAIChat){
       document.addEventListener('mousedown', handleClickOutside);
     }
 
+    
     return () => {
-      document.addEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('mousedown', handleClickOutside)
     }
     
-    init();
   }, [showAIChat]);
 
 
@@ -277,7 +334,9 @@ export default function Home() {
         </div>
 
       {/* Main Body  */}
-      <main className="ml-16 mt-16 p-6 bg-[#F4F4F4] min-h-screen">
+      {
+        !loading ? (
+          <main className="ml-16 mt-16 p-6 bg-[#F4F4F4] min-h-screen">
           <div className="p-6 grid grid-cols-12 gap-4">
 
             {/* LEFT COLUMN */}
@@ -296,52 +355,48 @@ export default function Home() {
               </div>
 
               {/* Revenue By Region */}
-              <div className="bg-white rounded-lg shadow p-4">
-                <h3 className="text-md font-semibold mb-4">Revenue By Region</h3>
-                <div className="flex flex-col lg:flex-row gap-4">
-                {/* World Map */}
-                <div className="w-full lg:w-1/2 h-64 bg-pink-50 rounded">
-                  <ComposableMap projectionConfig={{ scale: 120 }}>
-                    <Geographies geography="https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json">
-                      {({ geographies }) =>
-                        geographies.map((geo) => (
-                          <Geography
-                            key={geo.rsmKey}
-                            geography={geo}
-                            style={{
-                              default: {
-                                fill: "#A0DAB4",
-                                outline: "none"
-                              },
-                              hover: {
-                                fill: "#8DCBA4",
-                                outline: "none"
-                              },
-                              pressed: {
-                                fill: "#7EB79A",
-                                outline: "none"
-                              }
-                            }}
-                          />
-                        ))
-                      }
-                    </Geographies>
-                  </ComposableMap>
-                </div>
+                  <div className="bg-white rounded-lg shadow p-4">
+                    <h3 className="text-md font-semibold mb-4">Revenue By Region</h3>
+                    
+                    <div className="relative w-full h-[400px] overflow-hidden"> 
 
-                {/* Bar Chart */}
-                <div className="w-full lg:w-1/2 h-64 flex items-center justify-center">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart layout="vertical" data={regionRevenue}>
-                      <XAxis type="number" hide />
-                      <YAxis dataKey="region" type="category" width={100} />
-                      <Tooltip />
-                      <Bar dataKey="value" fill="#5B61F2" radius={[0, 8, 8, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-              </div>
+                        {/* World Map Chart  */}
+                        <div className="absolute inset-0 z-0 ">
+                          <MapChart countryRegionMap={countryRegionMap} regionMapColors={regionMapColors}/>
+                        </div>
+
+                        {/* Bar Chart */}
+                        <div className="absolute z-2 left-[-50px] bottom-6  w-[50%] h-[200px]">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart 
+                              layout="vertical" 
+                              data={regionRevenue} 
+                              barCategoryGap={12}
+                              margin={{top: 20, right: 30, left: 100, bottom: 20}}
+                            >
+                              <XAxis type="number" hide />
+                              <YAxis dataKey="region" type="category" width={100} 
+                                tick={{fontSize: 12, fontWeight: 600}}
+                              />
+                              <Tooltip 
+                                formatter={(value, name) => [`$${value.toLocaleString()}`, "Revenue"]}
+                              />
+                              <Bar
+                                dataKey="value"
+                                radius={[0, 6, 6, 0]}
+                                isAnimationActive={false}
+                              >
+                                {regionRevenue.map((entry, index) => (
+                                  <Cell key={`cell-${index}`} fill={regionMapColors[entry.region]} />
+                                ))}
+                              </Bar>
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                    </div> 
+                  </div>
+                
+              
 
               {/* Deal Status + Client Overview */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -511,101 +566,108 @@ export default function Home() {
             </div>
 
           </div>
-      </main>
-      
-      {
-        selectedRep && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg max-w-2xl relative p-14">
-              <button onClick={() => setSelectedRep(null)} className="absolute top-4 right-4 text-lg text-gray-500">X</button>
-              <h2 className="text-3xl font-extrabold mb-4">{selectedRep.name}</h2>
-              
-              <div className="mb-6">
-                <table className="table-auto border-separate border-spacing-x-4 border-spacing-y-4">
-                  <tr>
-                    <td>Role</td>
-                    <td className="font-bold"> {selectedRep.role}</td>
-                  </tr>
-                  <tr>
-                    <td>Region</td>
-                    <td className="font-bold"> {selectedRep.region}</td>
-                  </tr>
-                  <tr>
-                    <td>Skills</td>
-                    <td>
-                    <div className="flex flex-wrap gap-2 mt-1">
-                      {
-                        selectedRep.skills.map((skill, idx) => (
-                          <span key={idx} className="px-3 py-1 bg-indigo-100 text-indigo-900 text-xs rounded-full">{skill}</span>
-                        ))
-                      }
-                    </div>
-                    </td>
-                  </tr>
-                </table>
-                
-              </div>
+          {
+            selectedRep && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white p-6 rounded-lg shadow-lg max-w-2xl relative p-14">
+                  <button onClick={() => setSelectedRep(null)} className="absolute top-4 right-4 text-lg text-gray-500">X</button>
+                  <h2 className="text-3xl font-extrabold mb-4">{selectedRep.name}</h2>
+                  
+                  <div className="mb-6">
+                    <table className="table-auto border-separate border-spacing-x-4 border-spacing-y-4">
+                      <tr>
+                        <td>Role</td>
+                        <td className="font-bold"> {selectedRep.role}</td>
+                      </tr>
+                      <tr>
+                        <td>Region</td>
+                        <td className="font-bold"> {selectedRep.region}</td>
+                      </tr>
+                      <tr>
+                        <td>Skills</td>
+                        <td>
+                        <div className="flex flex-wrap gap-2 mt-1">
+                          {
+                            selectedRep.skills.map((skill, idx) => (
+                              <span key={idx} className="px-3 py-1 bg-indigo-100 text-indigo-900 text-xs rounded-full">{skill}</span>
+                            ))
+                          }
+                        </div>
+                        </td>
+                      </tr>
+                    </table>
+                    
+                  </div>
 
-              <div className="mb-4">
-                <h3 className="font-semibold">Deals</h3>
-                <table className="w-full mt-2 text-sm table-auto border-separate border-spacing-x-4 border-spacing-y-4">
-                  <thead>
-                    <tr className="text-left text-gray-500 border-b">
-                      <th>Company</th>
-                      <th>Value</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {
-                      selectedRep.deals.map((deal, idx) => (
-                        <tr key={idx} className="border-b">
-                          <td>{deal.client}</td>
-                          <td>{deal.value.toLocaleString()}</td>
-                          <td>
-                            <span  className={`text-xs px-2 py-1 rounded-full font-semibold ${deal.status === 'Closed Won' ? 'bg-green-200 text-green-800' : deal.status === 'In Progress' ? 'bg-yellow-200 text-yellow-800' : 'bg-red-200 text-red-800'}`}>
-                              {deal.status}
-                            </span>
-                          </td>
+                  <div className="mb-4">
+                    <h3 className="font-semibold">Deals</h3>
+                    <table className="w-full mt-2 text-sm table-auto border-separate border-spacing-x-4 border-spacing-y-4">
+                      <thead>
+                        <tr className="text-left text-gray-500 border-b">
+                          <th>Company</th>
+                          <th>Value</th>
+                          <th>Status</th>
                         </tr>
+                      </thead>
+                      <tbody>
+                        {
+                          selectedRep.deals.map((deal, idx) => (
+                            <tr key={idx} className="border-b">
+                              <td>{deal.client}</td>
+                              <td>{deal.value.toLocaleString()}</td>
+                              <td>
+                                <span  className={`text-xs px-2 py-1 rounded-full font-semibold ${deal.status === 'Closed Won' ? 'bg-green-200 text-green-800' : deal.status === 'In Progress' ? 'bg-yellow-200 text-yellow-800' : 'bg-red-200 text-red-800'}`}>
+                                  {deal.status}
+                                </span>
+                              </td>
+                            </tr>
 
-                      ))
-                    }
-                  </tbody>
-                </table>
-              </div> 
+                          ))
+                        }
+                      </tbody>
+                    </table>
+                  </div> 
 
-              <div>
-                <h3 className="font-semibold">Clients</h3>
-                <table className="w-full mt-2 text-sm table-auto border-separate border-spacing-x-4 border-spacing-y-4">
-                  <thead>
-                    <tr className="text-left text-gray-500 border-b">
-                      <th>Company</th>
-                      <th>Industry</th>
-                      <th>Contact</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {
-                      selectedRep.clients.map((client, idx) => (
-                       <tr key={idx} className="border-b">
-                         <td>{client.name}</td>
-                          <td>
-                            <span className="text-xs px-2 py-1 rounded-full bg-[rgba(25,154,246,0.4)] text-black">{client.industry}</span>
-                          </td>
-                          <td>
-                            <a href={`mailto:${client.contact}`} className="text-blue-600 underline text-xs">{client.contact}</a>
-                          </td>
-                       </tr>
-                      ))
-                    }
-                  </tbody>
-                </table>
+                  <div>
+                    <h3 className="font-semibold">Clients</h3>
+                    <table className="w-full mt-2 text-sm table-auto border-separate border-spacing-x-4 border-spacing-y-4">
+                      <thead>
+                        <tr className="text-left text-gray-500 border-b">
+                          <th>Company</th>
+                          <th>Industry</th>
+                          <th>Contact</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {
+                          selectedRep.clients.map((client, idx) => (
+                          <tr key={idx} className="border-b">
+                            <td>{client.name}</td>
+                              <td>
+                                <span className="text-xs px-2 py-1 rounded-full bg-[rgba(25,154,246,0.4)] text-black">{client.industry}</span>
+                              </td>
+                              <td>
+                                <a href={`mailto:${client.contact}`} className="text-blue-600 underline text-xs">{client.contact}</a>
+                              </td>
+                          </tr>
+                          ))
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
-            </div>
+            )
+          }
+      </main>
+        ): (
+          <div className="ml-16 mt-16 flex items-center justify-center min-h-screen bg-gray-100">
+            <div className="text-gray-500 animate-pulse text-xl">Loading Dashboard...</div>
           </div>
         )
       }
+      
+      
     </div>
   );
 }
