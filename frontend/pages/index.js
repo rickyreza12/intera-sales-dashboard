@@ -17,13 +17,16 @@ const TOKEN = process.env.NEXT_PUBLIC_JWT_TOKEN;
 export default function Home() {
   // const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
   const [selectedRep, setSelectedRep] = useState(null)
   const [showAIChat, setShowAIChat] = useState(false)
+  const [isDarkMode, setIsDarkMode] = useState(false)
 
   const [data, setData] = useState([]);
   const [token, setToken] = useState("");
+
+  
+  const [question, setQuestion] = useState("");
+  const [answer, setAnswer] = useState("");
 
   const regionRevenue = [
     { region: "North America", value: 120000 },
@@ -290,12 +293,18 @@ export default function Home() {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
+    if(isDarkMode){
+      document.documentElement.classList.add('dark');
+    }else{
+      document.documentElement.classList.remove('dark');
+    }
+
     
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
     
-  }, [showAIChat]);
+  }, [showAIChat, isDarkMode]);
 
 
   return (
@@ -303,29 +312,29 @@ export default function Home() {
     <div className="min-h-screen">
 
        {/* Top NavBar  */}
-       <div className="fixed top-0 left-0 right-0 z-20 bg-white border-b shadow-sm px-6 py-4 flex justify-between items-center">
+       <div className="fixed top-0 left-0 right-0 z-20 bg-white dark:bg-gray-900 text-black dark:text-white border-b border-gray-200 dark:border-gray-700 shadow-sm px-6 py-4 flex justify-between items-center h-16 dark:shadow-slate-900">
           <h1 className="text-lg font-semibold">Sales Representative Dashboard</h1>
-          <div className="text-xl cursor pointer">
-                <DarkModeIcon className="w-6 h-6" />
+          <div className="text-xl cursor-pointer hover:bg-gray-200 p-2 dark:hover:bg-gray-800 rounded-lg" onClick={() => setIsDarkMode(prev => !prev)}>
+              <DarkModeIcon className="w-6 h-6 text-gray-700 dark:text-yellow-300" />
           </div>
         </div>
       
       {/* SideBar */}
-      <div className="fixed top-0 left-0 h-screen w-16 bg-white text-white flex flex-col items-center justify-center gap-4 shadow-sm z-5">
+      <div className="fixed top-0 left-0 h-screen w-16 bg-white dark:bg-gray-800 text-white flex flex-col items-center justify-center gap-4 shadow-sm z-5 dark:shadow-slate-900">
           <div className="group relative">
-            <button className="hover:bg-[#0F1B2B]/10 p-2 rounded-md transition duration-200 ease-in-out" onClick={()=>{
+            <button className="hover:bg-[#0F1B2B]/10 dark:hover:bg-gray-500 p-2 rounded-md transition duration-200 ease-in-out" onClick={()=>{
               setShowAIChat(false)
             }}
             >
-              <DashboardIcon className="w-6 h-6 text-white" />
+              <DashboardIcon className="w-6 h-6 text-gray-700 dark:text-slate-300" />
             </button>
             <div className="tooltip-bubble absolute left-14 top-1/2 -translate-y-1/2 bg-white text-[#0F1B2B] text-sm px-4 py-2 rounded-md opacity-0 group-hover:opacity-100 transition whitespace-nowrap shadow">
               Dashboard
             </div>
           </div>
           <div className="group relative">
-            <button onClick={()=> setShowAIChat(prev => !prev)} className="hover:bg-[#0F1B2B]/10 p-2 rounded-md transition duration-200 ease-in-out">
-              <AIIcon className="w-6 h-6 text-white" />
+            <button onClick={()=> setShowAIChat(prev => !prev)} className="hover:bg-[#0F1B2B]/10 dark:hover:bg-gray-500 p-2 rounded-md transition duration-200 ease-in-out">
+            <AIIcon className="w-6 h-6 text-gray-700 dark:text-slate-300" />
             </button>
             <div className="tooltip-bubble absolute left-14 top-1/2 -translate-y-1/2 bg-white text-[#0F1B2B] text-sm px-4 py-2 rounded-md opacity-0 group-hover:opacity-100 transition whitespace-nowrap shadow">
                 Ask AI
@@ -336,7 +345,7 @@ export default function Home() {
       {/* Main Body  */}
       {
         !loading ? (
-          <main className="ml-16 mt-16 p-6 bg-[#F4F4F4] min-h-screen">
+          <main className="ml-16 mt-16 p-6 bg-[#F1F1F1] dark:bg-gray-600 min-h-screen">
           <div className="p-6 grid grid-cols-12 gap-4">
 
             {/* LEFT COLUMN */}
@@ -344,19 +353,19 @@ export default function Home() {
 
               {/* Total Revenue + Pipeline */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <div className="bg-white rounded-lg shadow p-4">
-                  <h3 className="text-sm text-gray-500">Total Revenue</h3>
-                  <p className="text-2xl font-bold">$445,000</p>
+                <div className="card bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-slate-900 p-4">
+                  <h3 className="text-sm text-gray-500 dark:text-slate-300">Total Revenue</h3>
+                  <p className="text-2xl font-bold dark:text-slate-200">$445,000</p>
                 </div>
-                <div className="bg-white rounded-lg shadow p-4">
-                  <h3 className="text-sm text-gray-500">Pipeline (In Progress)</h3>
-                  <p className="text-2xl font-bold">$400,000</p>
+                <div className="card bg-white dark:bg-gray-800 rounded-lg shadow p-4 dark:shadow-slate-900">
+                  <h3 className="text-sm text-gray-500 dark:text-slate-300">Pipeline (In Progress)</h3>
+                  <p className="text-2xl font-bold dark:text-slate-200">$400,000</p>
                 </div>
               </div>
 
               {/* Revenue By Region */}
-                  <div className="bg-white rounded-lg shadow p-4">
-                    <h3 className="text-md font-semibold mb-4">Revenue By Region</h3>
+                  <div className="card bg-white rounded-lg dark:bg-gray-800 shadow p-4 dark:shadow-slate-900">
+                    <h3 className="text-md font-semibold mb-4 dark:text-slate-200">Revenue By Region</h3>
                     
                     <div className="relative w-full h-[400px] overflow-hidden"> 
 
@@ -375,8 +384,17 @@ export default function Home() {
                               margin={{top: 20, right: 30, left: 100, bottom: 20}}
                             >
                               <XAxis type="number" hide />
-                              <YAxis dataKey="region" type="category" width={100} 
-                                tick={{fontSize: 12, fontWeight: 600}}
+                              <YAxis 
+                                dataKey="region" 
+                                type="category" 
+                                width={100} 
+                                tick={
+                                  {
+                                    fontSize: 12, 
+                                    fontWeight: 600,
+                                    fill: isDarkMode ? "#ffffff" : "#374151"
+                                  }
+                                }
                               />
                               <Tooltip 
                                 formatter={(value, name) => [`$${value.toLocaleString()}`, "Revenue"]}
@@ -400,8 +418,8 @@ export default function Home() {
 
               {/* Deal Status + Client Overview */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <div className="bg-white rounded-lg shadow p-4">
-                  <h3 className="text-md font-semibold mb-4">Deal Status Breakdown</h3>
+                <div className="card bg-white dark:bg-gray-800 rounded-lg shadow p-4 dark:shadow-slate-900">
+                  <h3 className="text-md font-semibold mb-4 dark:text-slate-200">Deal Status Breakdown</h3>
                   <div className="w-full h-64 flex items-center justify-center">
                   <ResponsiveContainer width="50%" height="100%">
                     <PieChart>
@@ -437,18 +455,18 @@ export default function Home() {
                                     style={{ backgroundColor: ["#4f46e5", "#4338ca", "#06b6d4"][index] }}
                                   >
                                   </div>
-                                  <span>{entry.name}</span>
+                                  <span className="dark:text-slate-200"> {entry.name}</span>
                               </div>
                             ))
                           }
                     </div>
                   </div>
                 </div>
-                <div className="bg-white rounded-lg shadow p-4">
-                  <h3 className="text-md font-semibold mb-4">Client Overview</h3>
-                  <table className="w-full text-sm">
+                <div className="card bg-white dark:bg-gray-800 rounded-lg shadow p-4 dark:shadow-slate-900">
+                  <h3 className="text-md font-semibold mb-4 dark:text-slate-200">Client Overview</h3>
+                  <table className="w-full text-sm dark:text-slate-300">
                     <thead>
-                      <tr className="text-left text-gray-500">
+                      <tr className="text-left text-gray-500 dark:text-slate-200">
                           <th className="pb-2">Client</th>
                           <th className="pb-2">Industry</th>
                       </tr>
@@ -457,7 +475,7 @@ export default function Home() {
                       <tr key={index} className="border-t">
                         <td className="py-2">{client.name}</td>
                         <td>
-                          <span className="px-2 py-1 text-xs rounded-full bg-indigo-100 text-indigo-800">
+                          <span className="px-2 py-1 text-xs rounded-full bg-indigo-100 text-indigo-800 font-semibold">
                             {client.industry}
                           </span>
                         </td>
@@ -472,8 +490,8 @@ export default function Home() {
             {/* RIGHT COLUMN */}
             <div className="col-span-12 lg:col-span-6 space-y-4 flex flex-col">
 
-              <div className="bg-white rounded-lg shadow px-8 py-6">
-                <h3 className="text-md font-semibold mb-4">Top 3 Sales Representative By Revenue</h3>
+              <div className="card bg-white rounded-lg dark:bg-gray-800 shadow px-8 py-6 dark:shadow-slate-900">
+                <h3 className="text-md font-semibold mb-4 dark:text-slate-200">Top 3 Sales Representative By Revenue</h3>
                 <div className="flex justify-center items-center gap-4 p-4">
                     {
                       topReps.map((rep,index)=>(
@@ -485,19 +503,19 @@ export default function Home() {
                               className="object-cover w-full h-full"
                             />
                           </div>
-                          <p className="font-semibold text-xl">{rep.name}</p>
-                          <p className="text-sm text-gray-600">${rep.revenue.toLocaleString()}</p>
+                          <p className="font-semibold text-2xl dark:text-slate-200">{rep.name}</p>
+                          <p className="text-xl text-gray-600 dark:text-slate-200">${rep.revenue.toLocaleString()}</p>
                         </div>
                       ))
                     }
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow p-6 flex-1">
-                <h3 className="text-md font-semibold mb-4">Sales Reps</h3>
-                <table className="w-full text-sm">
+              <div className="card bg-white dark:bg-gray-800 rounded-lg shadow p-6 flex-1 dark:shadow-slate-900">
+                <h3 className="text-md font-semibold mb-4 dark:text-slate-200">Sales Reps</h3>
+                <table className="w-full text-sm dark:text-slate-300">
                     <thead>
-                      <tr className="text-left text-gray-500">
+                      <tr className="text-left text-gray-500 dark:text-slate-200">
                         <th className="py-2">Name</th>
                         <th>Region</th>
                         <th>Deals Won</th>
@@ -508,7 +526,7 @@ export default function Home() {
                     <tbody>
                       {
                         data.map((rep, idx) => (
-                          <tr key={idx} className="border-b hover:bg-gray-50">
+                          <tr key={idx} className="border-b hover:bg-gray-100 dark:hover:bg-gray-500 cursor-pointer">
                             <td className="py-2 font-semibold">{rep.name}</td>
                             <td>{rep.region}</td>
                             <td>${rep.deals.reduce((sum, data) => sum + data.value, 0).toLocaleString()}</td>
@@ -516,7 +534,7 @@ export default function Home() {
                             <td>
                             <div className="group relative">
                               <button className="hover:bg-[#0F1B2B]/10 p-2 rounded-md transition duration-200 ease-in-out" onClick={()=> setSelectedRep(rep)}>
-                                <EyeIcon className="w-6 h-6 text-white" />
+                                <EyeIcon className="w-6 h-6 text-gray-700 dark:text-slate-300" />
                               </button>
                               <div className="tooltip-bubble absolute left-14 top-1/2 -translate-y-1/2 bg-white text-[#0F1B2B] text-sm px-4 py-2 rounded-md opacity-0 group-hover:opacity-100 transition whitespace-nowrap shadow">
                                 View {rep.name}
@@ -535,10 +553,10 @@ export default function Home() {
             {/* AI Chat Sidebar  */}
             <div 
             id="ai-panel"
-            className={`fixed top-0 right-0 h-full bg-white shadow-lg z-50 transition-al duration-300 ease-in-out ${showAIChat ? 'w-full sm:w-[400px]' : 'w-0 overflow-hidden'}`}>
+            className={`fixed top-0 right-0 h-full bg-white shadow-lg z-50 transition-al duration-300 ease-in-out ${showAIChat ? 'w-full sm:w-[400px]' : 'w-0 overflow-hidden'} dark:bg-gray-800 dark:shadow-slate-900`}>
               <div className="h-full flex flex-col p-4">
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-lg font-semibold"> Ask About Sales</h2>
+                    <h2 className="text-lg font-semibold dark:text-slate-300"> Ask About Sales</h2>
                     <button onClick={()=> setShowAIChat(false)} className="text-lg font-bold"></button>
                 </div>
 
@@ -551,7 +569,7 @@ export default function Home() {
                       <input 
                         type="text"
                         placeholder="Type a questions..."
-                        className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm"
+                        className="flex-1 border border-gray-300 dark:border-slate-200 rounded-xl px-3 py-2 text-sm dark:bg-gray-800 dark:text-slate-200"
                       />
                       <button className="text-white bg-indigo-500 hover:bg-indigo-600 p-2 rounded-full">
                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -564,17 +582,17 @@ export default function Home() {
               </div>
 
             </div>
-
           </div>
+          {/* MODAL  SALES REP */}
           {
             selectedRep && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-white p-6 rounded-lg shadow-lg max-w-2xl relative p-14">
-                  <button onClick={() => setSelectedRep(null)} className="absolute top-4 right-4 text-lg text-gray-500">X</button>
-                  <h2 className="text-3xl font-extrabold mb-4">{selectedRep.name}</h2>
+                <div className="bg-white dark:bg-gray-700 p-14 rounded-lg shadow-lg max-w-2xl relative p-14 dark:shadow-slate-900">
+                  <button onClick={() => setSelectedRep(null)} className="absolute top-4 right-4 text-lg text-gray-500 dark:text-slate-200">X</button>
+                  <h2 className="text-4xl font-extrabold mb-4 dark:text-slate-200">{selectedRep.name}</h2>
                   
                   <div className="mb-6">
-                    <table className="table-auto border-separate border-spacing-x-4 border-spacing-y-4">
+                    <table className="table-auto border-separate border-spacing-x-4 border-spacing-y-4 dark:text-slate-300">
                       <tr>
                         <td>Role</td>
                         <td className="font-bold"> {selectedRep.role}</td>
@@ -589,7 +607,7 @@ export default function Home() {
                         <div className="flex flex-wrap gap-2 mt-1">
                           {
                             selectedRep.skills.map((skill, idx) => (
-                              <span key={idx} className="px-3 py-1 bg-indigo-100 text-indigo-900 text-xs rounded-full">{skill}</span>
+                              <span key={idx} className="px-3 py-1 bg-indigo-100 font-semibold text-indigo-900 text-xs rounded-full">{skill}</span>
                             ))
                           }
                         </div>
@@ -599,11 +617,11 @@ export default function Home() {
                     
                   </div>
 
-                  <div className="mb-4">
-                    <h3 className="font-semibold">Deals</h3>
+                  <div className="mb-4 dark:text-slate-300">
+                    <h3 className="font-semibold dark:text-slate-200">Deals</h3>
                     <table className="w-full mt-2 text-sm table-auto border-separate border-spacing-x-4 border-spacing-y-4">
                       <thead>
-                        <tr className="text-left text-gray-500 border-b">
+                        <tr className="text-left text-gray-500 border-b dark:text-slate-300">
                           <th>Company</th>
                           <th>Value</th>
                           <th>Status</th>
@@ -629,10 +647,10 @@ export default function Home() {
                   </div> 
 
                   <div>
-                    <h3 className="font-semibold">Clients</h3>
+                    <h3 className="font-semibold dark:text-slate-200">Clients</h3>
                     <table className="w-full mt-2 text-sm table-auto border-separate border-spacing-x-4 border-spacing-y-4">
                       <thead>
-                        <tr className="text-left text-gray-500 border-b">
+                        <tr className="text-left text-gray-500 border-b dark:text-slate-300">
                           <th>Company</th>
                           <th>Industry</th>
                           <th>Contact</th>
@@ -642,12 +660,12 @@ export default function Home() {
                         {
                           selectedRep.clients.map((client, idx) => (
                           <tr key={idx} className="border-b">
-                            <td>{client.name}</td>
+                            <td className="dark:text-slate-300">{client.name}</td>
                               <td>
-                                <span className="text-xs px-2 py-1 rounded-full bg-[rgba(25,154,246,0.4)] text-black">{client.industry}</span>
+                                <span className="text-xs font-semibold px-2 py-1 rounded-full bg-[rgba(25,154,246,0.4)] dark:bg-slate-300 text-black">{client.industry}</span>
                               </td>
                               <td>
-                                <a href={`mailto:${client.contact}`} className="text-blue-600 underline text-xs">{client.contact}</a>
+                                <a href={`mailto:${client.contact}`} className="text-blue-600 underline text-xs dark:text-slate-200">{client.contact}</a>
                               </td>
                           </tr>
                           ))
