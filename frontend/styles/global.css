@@ -23,4 +23,7 @@ body{
     border-style: solid;
     border-color: transparent white transparent transparent;
 }
-  
+
+.dark .tooltip-bubble::before {
+    border-color: transparent #1f2937 transparent transparent; /* dark gray */
+}
