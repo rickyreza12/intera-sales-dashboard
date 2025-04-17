@@ -1,21 +1,17 @@
 from fastapi.testclient import TestClient
+from tests import API_PREFIX, get_token, client
 from main import app
 
-client = TestClient(app)
-
-def get_token():
-    response = client.post("/api/token", data={"username": "admin", "password": "password123"})
-    return response.json()["access_token"]
 
 def test_client_overview_requires_token():
-    response = client.post("/api/sales/clients")
+    response = client.post(f"{API_PREFIX}/clients")
     assert response.status_code == 401
     assert response.json()["detail"]["message"] == "Missing or invalid token"
 
 def test_client_overview_success():
     token = get_token()
     headers = {"Authorization": f"Bearer {token}"}
-    response = client.post("/api/sales/clients", headers=headers)
+    response = client.post(f"{API_PREFIX}/clients", headers=headers)
     
     assert response.status_code == 200
     data = response.json()["data"]
@@ -29,7 +25,7 @@ def test_client_overview_success():
 def test_client_overview_unique_clients():
     token = get_token()
     headers = {"Authorization": f"Bearer {token}"}
-    reponse = client.post("/api/sales/clients", headers=headers)
+    reponse = client.post(f"{API_PREFIX}/clients", headers=headers)
     
     assert reponse.status_code == 200
     clients = reponse.json()["data"]

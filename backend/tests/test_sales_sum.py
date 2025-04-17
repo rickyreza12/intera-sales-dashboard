@@ -1,14 +1,9 @@
 from fastapi.testclient import TestClient
+from tests import API_PREFIX, client, get_token
 from main import app
 
-client =TestClient(app)
-
-def get_token():
-    response = client.post("/api/token", data={"username": "admin", "password": "password123"})
-    return response.json()["access_token"]
-
 def test_summary_requires_token():
-    response = client.post("/api/sales/summary")
+    response = client.post(f"{API_PREFIX}/summary")
     assert response.status_code == 401
     assert response.json()["detail"]["message"] == "Missing or invalid token"
     
@@ -16,7 +11,7 @@ def test_summary_success():
     token = get_token()
     headers = {"Authorization": f"Bearer {token}"}
     
-    response = client.post("/api/sales/summary", headers=headers)
+    response = client.post(f"{API_PREFIX}/summary", headers=headers)
     data = response.json()
     
     assert response.status_code == 200
@@ -29,7 +24,7 @@ def test_summary_revenue_totals():
     token = get_token()
     headers = {"Authorization": f"Bearer {token}"}
     
-    response = client.post("/api/sales/summary", headers=headers)
+    response = client.post(f"{API_PREFIX}/summary", headers=headers)
     data = response.json()["data"]
 
     assert data["total_revenue"] == 445000 
@@ -39,7 +34,7 @@ def test_summary_group_by_region():
     token = get_token()
     headers = {"Authorization": f"Bearer {token}"}
     
-    response = client.post("/api/sales/summary", headers=headers)
+    response = client.post(f"{API_PREFIX}/summary", headers=headers)
     regions = [item["region"] for item in response.json()["data"]["revenue_by_region"]]
 
     assert "Europe" in regions
