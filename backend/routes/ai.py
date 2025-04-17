@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request
 
 router = APIRouter()
 
-@router.post("/api/ai")
+@router.post("")
 async def ai_endpoint(request: Request):
     """
     Accepts a user question and returns a placeholder AI response.

@@ -10,7 +10,7 @@ from models.client_response import ClientInfo, ClientOverviewResponse
 
 router = APIRouter()
 
-@router.post("/api/sales/clients", response_model=ClientOverviewResponse)
+@router.post("/clients", response_model=ClientOverviewResponse)
 def get_client_overview(token: str = Depends(custom_oauth2_scheme)):
     """
     Get overview of all unique clients across all sales reps.

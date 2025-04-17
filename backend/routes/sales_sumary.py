@@ -8,7 +8,7 @@ from utils.response import error_response
 
 router = APIRouter()
 
-@router.post("/api/sales/summary", response_model=SalesSummaryResponse)
+@router.post("/summary", response_model=SalesSummaryResponse)
 def get_sales_summary(token: str = Depends(custom_oauth2_scheme)):
     """
     Generate sales summary including total revenue, in-progress revenue,

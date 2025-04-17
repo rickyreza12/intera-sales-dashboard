@@ -10,7 +10,7 @@ from utils.response import error_response
 
 router = APIRouter()
     
-@router.post("/api/sales-reps")
+@router.post("/sales-reps")
 async def get_sales_reps(
     token: str = Depends(custom_oauth2_scheme),
     region: str = Query(default=None, description="Filter by region (e.g. 'Europe')"),

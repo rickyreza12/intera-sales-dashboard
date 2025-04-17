@@ -8,7 +8,7 @@ from utils.users import get_fake_user
 from models.top_sales_response import TopRep, TopRepsResponse
 
 
-router = APIRouter(prefix="/api/sales", tags=["Sales"])
+router = APIRouter()
 
 @router.post("/top-reps", response_model=TopRepsResponse)
 def get_top_reps(token: str = Depends(custom_oauth2_scheme)):

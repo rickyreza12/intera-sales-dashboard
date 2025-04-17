@@ -11,7 +11,7 @@ from auth.auth_handler import(
 
 import uvicorn
 
-from routes import ai, auth, sales_reps, sales_sumary, sales_deal, sales_clients,sales_topreps
+from routes import register_routes
 
 
 #Route handling
@@ -29,14 +29,7 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 #ROUTER 
-app.include_router(sales_reps.router)
-app.include_router(auth.router)
-app.include_router(ai.router)
-app.include_router(sales_sumary.router)
-app.include_router(sales_deal.router)
-app.include_router(sales_clients.router)
-app.include_router(sales_topreps.router)
-
+register_routes(app)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

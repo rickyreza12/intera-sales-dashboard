@@ -7,7 +7,7 @@ from utils.response import error_response
 router = APIRouter()
 
 
-@router.post("/api/token")
+@router.post("")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     """
     Authenticates a user and return jwt access token

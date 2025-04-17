@@ -8,7 +8,7 @@ from models.dummy_data import load_dummy_data
 
 router = APIRouter()
 
-@router.post("/api/sales/deal-status", response_model=DealStatusResponse)
+@router.post("/deal-status", response_model=DealStatusResponse)
 def get_deal_status_breakdown(token: str = Depends(custom_oauth2_scheme)):
     """
     Get a breakdown of deals grouped by status.
