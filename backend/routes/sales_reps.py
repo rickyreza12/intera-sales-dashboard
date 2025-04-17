@@ -3,14 +3,15 @@ import json
 from fastapi import APIRouter, Depends, Query
 
 from auth.auth_handler import custom_oauth2_scheme, decode_token
+from models.sales_reps_response import Client, Deal, Pagination, SalesRep, SalesRepsResponse
 from utils.users import get_fake_user
-from models.dummy_data import load_dummy_data
+from config.dummy_data import load_dummy_data
 from utils.response import error_response
 
 
 router = APIRouter()
     
-@router.post("/sales-reps")
+@router.post("/sales-reps", response_model=SalesRepsResponse)
 async def get_sales_reps(
     token: str = Depends(custom_oauth2_scheme),
     region: str = Query(default=None, description="Filter by region (e.g. 'Europe')"),
@@ -96,16 +97,28 @@ async def get_sales_reps(
     total = len(filtered)
     start = (page - 1) * size
     end = start + size
-    paginated = filtered[start:end]       
+    paginated = filtered[start:end]
+    
+    model_data = []
+    for rep in paginated:
+        model_data.append(
+            SalesRep(
+                id=rep["id"],
+                name=rep["name"],
+                role=rep["role"],
+                region=rep["region"],
+                skills=rep["skills"],
+                deals=[Deal(**deal) for deal in rep["deals"]],
+                clients=[Client(**client) for client in rep["clients"]],
+                deal_total=rep["deal_total"],
+                client_total=rep["client_total"]
+            )
+        )       
     
     #Response 
-    return {
-        "statusCode": 200,
-        "message": "Sales reps data retrieved successfully.",
-        "pagination": {
-            "total": total,
-            "page": page,
-            "size": size
-        },
-        "data": paginated
-    }
+    return SalesRepsResponse(
+        statusCode=200,
+        message="Sales reps data retrieved successfully.",
+        pagination=Pagination(total=total, page=page, size=size),
+        data=paginated
+    )

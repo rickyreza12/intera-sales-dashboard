@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 
 from auth.auth_handler import custom_oauth2_scheme, decode_token
 from config.settings import settings
-from models.dummy_data import load_dummy_data
+from config.dummy_data import load_dummy_data
 from utils.response import error_response
 from utils.users import get_fake_user
 from models.top_sales_response import TopRep, TopRepsResponse
