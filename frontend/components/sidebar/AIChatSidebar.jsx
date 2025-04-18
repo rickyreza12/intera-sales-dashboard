@@ -1,5 +1,6 @@
 import { useState } from "react";
 import useAIFetch from "@/hooks/useAIFetch";
+import SendIcon from "../icons/SendIcon";
 
 export default function AIChatSidebar({ show, onClose }) {
     const [question, setQuestion] = useState("");
@@ -46,11 +47,16 @@ export default function AIChatSidebar({ show, onClose }) {
                 onChange={(e) =>setQuestion(e.target.value)}
                 className="flex-1 border border-gray-300 dark:border-slate-200 rounded-xl px-3 py-2 text-sm dark:bg-gray-800 dark:text-slate-200"
               />
-              <button className="text-white bg-indigo-500 hover:bg-indigo-600 p-2 rounded-full" onClick={handleSubmit}>
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M2.94 2.94a1.5 1.5 0 012.122 0l12 12a1.5 1.5 0 01-2.122 2.122l-12-12a1.5 1.5 0 010-2.122z" />
-                </svg>
-              </button>
+
+              <div className="group relative">
+                <button className={`text-white bg-indigo-500 hover:bg-indigo-600 p-2 rounded-full`}
+                onClick={handleSubmit}
+                >
+                  <SendIcon className={
+                    `w-6 h-6 text-slate-300 dark:text-indigo-600`
+                  } />
+                </button>
+              </div>
             </div>
           </div>
         </div>
