@@ -6,6 +6,11 @@ import DarkModeIcon from "@/components/icons/DarkModeIcon";
 import AIIcon from "@/components/icons/AIICon";
 import EyeIcon from "@/components/icons/EyeIcon";
 import dynamic from "next/dynamic"
+import useSalesSummary from "@/hooks/useSalesSummary";
+import useDealStatus from "@/hooks/useDealStatus";
+import useClientsOverview from "@/hooks/useClientsOverview";
+import useSalesReps from "@/hooks/useSalesReps";
+import useTopReps from "@/hooks/useTopReps";
 
 const MapChart = dynamic(()=> import("@/components/MapChart"), {
   ssr: false
@@ -26,11 +31,11 @@ export default function Home() {
   // const [data, setData] = useState([]);
   const [token, setToken] = useState("");
 
-  const [summary, setSummary] = useState(null);
-  const [dealStatusData, setDealStatusData] = useState([]);
-  const [clientsData, setClientsData] = useState([]);
-  const [topReps, setTopReps] = useState([]);
-  const [salesReps, setSalesReps] = useState([]);
+  const {summary, loadingSummary, errorSummary} = useSalesSummary(token);
+  const {dealStatusData, loadingDeal, errorDeals} = useDealStatus(token);
+  const {clientsData, loadingClient, serrorClient} = useClientsOverview(token);
+  const {topReps, loadingTopRep, errorTopRep} = useTopReps(token);
+  const {salesReps, loadingSalesRep, errorSalesRep} = useSalesReps(token);
   
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
@@ -122,111 +127,9 @@ export default function Home() {
     }
   }
 
-  const fetchSummary = async (newToken) => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${BASE_URL}/api/sales/summary`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${newToken}`
-        }
-      });
-      const json = await res.json();
-      setSummary(json.data)
-    }catch (err) {
-      console.error("Failed to fetch summary:", err);
-    }
-  }
-
-  const fetchDealStatus = async (newToken) => {
-    try {
-      const res = await fetch(`${BASE_URL}/api/sales/deal-status`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${newToken}`
-        }
-      })
-
-      const json = await res.json();
-      setDealStatusData(json.data.summary)
-
-    } catch (error) {
-      console.error("Failed to fetch deal status", error)
-    }
-  }
-
-  const fetchClients = async (newToken) => {
-    try {
-      const res = await fetch(`${BASE_URL}/api/sales/clients`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${newToken}`
-        }
-      });
-      const json = await res.json();
-  
-      if (!json?.data) {
-        console.warn("Clients data not found", json);
-        return;
-      }
-  
-      setClientsData(json.data);
-    } catch (err) {
-      console.error("Failed to fetch clients:", err);
-    }
-  };
-
-  const fetchTopReps  = async (newToken) => {
-    try {
-      const res = await fetch(`${BASE_URL}/api/sales/top-reps`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${newToken}`
-        }
-      });
-      const json = await res.json();
-  
-      if (!json?.data) {
-        console.warn("Clients data not found", json);
-        return;
-      }
-  
-      setTopReps(json.data);
-    } catch (err) {
-      console.error("Failed to fetch clients:", err);
-    }
-  };
-
-  const fetchSalesReps = async (token) => {
-    try {
-      const res = await fetch(`${BASE_URL}/api/sales/sales-reps`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      const json = await res.json();
-      if (!Array.isArray(json?.data)) {
-        console.warn("Sales reps data invalid", json);
-        return;
-      }
-  
-      setSalesReps(json.data);
-    } catch (err) {
-      console.error("Failed to fetch sales reps:", err);
-    }
-  };
 
   const init = async () => {
-    const freshToken = await fetchToken();
-    if(!freshToken) return;
-
-    await fetchSummary(freshToken);
-    await fetchDealStatus(freshToken);
-    await fetchClients(freshToken);
-    await fetchTopReps(freshToken)
-    await fetchSalesReps(freshToken)
-
+    await fetchToken();
     setLoading(false)    
   }
 
