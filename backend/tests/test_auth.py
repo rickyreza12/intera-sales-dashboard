@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 import re
-from jose import jwt
-from tests import API_PREFIX, client
+from tests import API_PREFIX, client, jwt
 from config.settings import settings
 from main import app
 

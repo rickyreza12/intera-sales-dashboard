@@ -2,6 +2,8 @@ from difflib import get_close_matches
 from fastapi import APIRouter, Depends, Request
 
 from auth.auth_handler import custom_oauth2_scheme, decode_token
+from config.gemini import ask_gemini
+from config.dummy_data import load_dummy_data
 from config.answers import load_answers_data
 
 router = APIRouter()
@@ -91,3 +93,33 @@ async def ai_endpoint(
 
     # Fallback
     return {"answer": "Sorry, I couldn't find a specific answer for that. Please try rephrasing your question!"}
+
+
+@router.post("/real")
+async def ai_real_endpoint(
+    request: Request,
+    token: str = Depends(custom_oauth2_scheme)
+):
+    decode_token(token)
+    body = await request.json()
+    question = body.get("question", "")
+
+    sales_data = load_dummy_data()["salesReps"]
+
+    formatted = []
+    for rep in sales_data:
+        deals = ", ".join(f'{d["client"]} (${d["value"]}, {d["status"]})' for d in rep["deals"])
+        skills = ", ".join(rep["skills"])
+        clients = ", ".join(c["name"] for c in rep["clients"])
+        formatted.append(f"{rep['name']} ({rep['role']}) from {rep['region']}\nDeals: {deals}\nClients: {clients}\nSkills: {skills}\n")
+
+    prompt = f"""Based on the following sales rep data, answer this question:
+
+{question}
+
+Sales Reps Data:
+{chr(10).join(formatted)}
+"""
+
+    ai_response = ask_gemini(prompt)
+    return {"answer": ai_response}

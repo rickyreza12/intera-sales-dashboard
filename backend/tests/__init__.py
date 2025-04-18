@@ -1,5 +1,7 @@
 from fastapi.testclient import TestClient
 from main import app
+import jwt
+from jwt import ExpiredSignatureError, InvalidTokenError
 
 client = TestClient(app)
 API_PREFIX = "/api/sales"

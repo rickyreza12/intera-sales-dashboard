@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from fastapi import Depends
-from jose import JWTError, jwt
+import jwt
+from jwt import ExpiredSignatureError, InvalidTokenError
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
 from utils.users import get_fake_user
@@ -41,9 +42,18 @@ async def custom_oauth2_scheme(token: str = Depends(oauth2_scheme)):
         error_response(401, "Missing or invalid token")
     return token
 
-def decode_token(token: str):
+def encode_token(username: str) -> str:
+    payload = {
+        "sub": username,
+        "exp": datetime.utcnow() + timedelta(days=1),
+    }
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+def decode_token(token: str) -> str:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload.get("sub")
-    except JWTError:
-        error_response(401, "Invalid token")
+        return payload["sub"]
+    except ExpiredSignatureError:
+        raise Exception("Token has expired")
+    except InvalidTokenError:
+        raise Exception("Invalid token")

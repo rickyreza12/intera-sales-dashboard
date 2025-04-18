@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     APP_USERNAME: str
     APP_PASSWORD: str
     DEV_HOST: str
+    GEMINI_API_KEY: str 
     
     model_config = SettingsConfigDict(
         env_file=".env",
