@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-export default function useAIFetch(token, question) {
+export default function useAIFetch(token, question, useLLM = false) {
   const [answer, setAnswer] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -11,12 +11,14 @@ export default function useAIFetch(token, question) {
   useEffect(() => {
     if (!token || !question) return;
 
-    const fetchAI = async () => {
-      setLoading(true);
-      setError(null);
+    setAnswer("")
+    setLoading(true);
+    setError(null);
 
+    const fetchAI = async () => {
       try {
-        const res = await fetch(`${BASE_URL}/api/ai/mocked`, {
+        const endpoint = useLLM ? "real" : "mocked";
+        const res = await fetch(`${BASE_URL}/api/ai/${endpoint}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
