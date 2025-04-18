@@ -74,23 +74,27 @@ export default function AIChatSidebar({ show, onClose }) {
         </div>
 
         <div className="flex-1 overflow-y-auto space-y-2 text-sm pt-2 bg-[#F4F4F4] p-4 sm:p-6 dark:bg-gray-800 rounded-lg">
-          {messages.map((msg, index) => (
+        {messages.map((msg, index) => (
+          <div
+            key={index}
+            className={`flex ${
+              msg.role === "user" ? "justify-end" : "justify-start"
+            }`}
+          >
             <div
-              key={index}
-              className={`px-4 py-2 mb-4 rounded-xl break-words w-fit max-w-[80%]
+              className={`px-4 py-2 rounded-xl break-words w-fit max-w-[80%]
                 ${
                   msg.role === "user"
-                    ? "ml-auto bg-green-200 text-black"
-                    : "mr-auto bg-[#F4F4F4] dark:bg-gray-700 text-gray-800 dark:text-white"
+                    ? "bg-green-200 text-black"
+                    : "bg-blue-200 dark:bg-gray-700 text-gray-800 dark:text-white"
                 }
               `}
-              style={{ marginLeft: msg.role === "user" ? "8em" : "0" }}
             >
               {msg.text}
             </div>
-          ))}
-        </div>
-
+          </div>
+        ))}
+      </div>
 
         <div className="mt-auto pt-4 border-t">
           <div className="flex items-center gap-2">

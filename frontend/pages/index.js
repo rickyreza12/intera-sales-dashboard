@@ -1,4 +1,3 @@
-import { URLSearchParams } from "next/dist/compiled/@edge-runtime/primitives/url";
 import { useState, useEffect } from "react";
 
 import LayoutWrapper from "@/components/layout/LayoutWrapper";
@@ -21,10 +20,6 @@ import AIChatSidebar from "@/components/sidebar/AIChatSidebar";
 import useFetchToken from "@/hooks/userFetchToken";
 import LoadingScreen from "@/components/utils/LoadingScreen";
 import { regionMapColors, countryRegionMap } from "@/constants/regions";
-
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-const TOKEN = process.env.NEXT_PUBLIC_JWT_TOKEN;
 
 export default function Home() {
 
@@ -58,10 +53,6 @@ export default function Home() {
   serrorClient ||
   errorTopRep ||
   errorSalesRep;
-  
-  const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
-
 
   function handleClickOutside(e) {
     const panel = document.getElementById('ai-panel');
@@ -88,7 +79,6 @@ export default function Home() {
 
 
   return (
-    // <div className="min-h-screen flex bg-gray-50 text-gray-800">
     <LayoutWrapper>
 
        {/* Top NavBar  */}
