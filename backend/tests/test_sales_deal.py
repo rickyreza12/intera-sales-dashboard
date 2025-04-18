@@ -1,4 +1,4 @@
-from fastapi.testclient import TestClient
+
 from tests import API_PREFIX, client, get_token
 from main import app
 

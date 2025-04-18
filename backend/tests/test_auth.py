@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 import re
-from fastapi.testclient import TestClient
 from jose import jwt
 from tests import API_PREFIX, client
 from config.settings import settings
