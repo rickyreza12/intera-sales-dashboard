@@ -31,12 +31,19 @@ export default function Home() {
 
   // const [data, setData] = useState([]);
   const {token, tokenLoading, tokenError} = useFetchToken();
+  const [queryParams, setQueryParams] = useState({
+    name: "",
+    sort_by: "name",
+    sort_order: "asc",
+    page: 1,
+    size: 5
+  });
 
   const {summary, loadingSummary, errorSummary} = useSalesSummary(token);
   const {dealStatusData, loadingDeal, errorDeals} = useDealStatus(token);
   const {clientsData, loadingClient, serrorClient} = useClientsOverview(token);
   const {topReps, loadingTopRep, errorTopRep} = useTopReps(token);
-  const {salesReps, loadingSalesRep, errorSalesRep} = useSalesReps(token);
+  const {salesReps, pagination, loadingSalesRep, errorSalesRep} = useSalesReps(token, queryParams);
 
   const isAnyLoading =
   tokenLoading ||
@@ -53,6 +60,31 @@ export default function Home() {
   serrorClient ||
   errorTopRep ||
   errorSalesRep;
+
+  const handleSearch = (text) => {
+    setQueryParams((prev) => ({
+      ...prev,
+      name: text,
+      page: 1
+    }));
+  };
+  
+  const handleSort = (column) => {
+    setQueryParams((prev) => ({
+      ...prev,
+      sort_by: column,
+      sort_order: prev.sort_by === column && prev.sort_order === "asc" ? "desc" : "asc",
+      page: 1
+    }));
+  };
+  
+  const handlePageChange = (newPage) => {
+    setQueryParams((prev) => ({
+      ...prev,
+      page: newPage
+    }));
+  };
+  
 
   function handleClickOutside(e) {
     const panel = document.getElementById('ai-panel');
@@ -134,6 +166,12 @@ export default function Home() {
               {/* Sales Reps  */}
               <SalesRepsTable 
                 salesReps={salesReps}
+                pagination={pagination}
+                onSearch={handleSearch}
+                onSort={handleSort}
+                onPageChange={handlePageChange}
+                sortBy={queryParams.sort_by}
+                sortOrder={queryParams.sort_order}
                 regionMapColors={regionMapColors}
                 selectedTooltip={selectedTooltip}
                 tooltipPosition={tooltipPosition}
