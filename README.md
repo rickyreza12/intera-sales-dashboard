@@ -107,22 +107,9 @@ pytest
 
 ---
 
-## 🖼️ Screenshots
+## 🖼️ Watch the demo here:  
 
-### 🌞 Light Mode 
-![Dashboard Light](https://raw.githubusercontent.com/rickreza12/intera-sales-dashboard/main/frontend/public/assets/interasalesdhasboard-dashboard.png)
-
-### 🌚 Dark Mode
-![Dashboard Dark](https://raw.githubusercontent.com/rickreza12/intera-sales-dashboard/main/frontend/public/assets/interasalesdhasboard-dashboard-darkmode.png)
-
-### 🤖 Ask AI Sidebar - Mocked AI
-![Ask AI](https://raw.githubusercontent.com/rickreza12/intera-sales-dashboard/main/frontend/public/assets/interasalesdhasboard-askai.png)
-
-### 🧠 Ask AI Sidebar - Gemini Mode
-![Ask AI Gemini](https://raw.githubusercontent.com/rickreza12/intera-sales-dashboard/main/frontend/public/assets/interasalesdhasboard-askai-geminimode.png)
-
-### 🧠 + 🌚 Dark Gemini Mode
-![Dark AI Gemini](https://raw.githubusercontent.com/rickreza12/intera-sales-dashboard/main/frontend/public/assets/interasalesdhasboard-askai-darkmode.png)
+[![Watch the demo](https://img.youtube.com/vi/zPUIC7yJP6Y/hqdefault.jpg)](https://www.youtube.com/watch?v=zPUIC7yJP6Y)
 
 ---
 
